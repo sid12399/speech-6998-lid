@@ -8,11 +8,11 @@
 set -e -o pipefail -u
 
 
-stage=0
+stage=2
 
 # Download data
-mkdir db
 if [ $stage -le 0 ]; then
+	mkdir db
         ./local/download_data.sh
 fi
 
@@ -28,5 +28,6 @@ if [ $stage -le 2 ]; then
         for folder in db/cu-multilang-dataset/*; do
           echo "making mfcc + pitch features for $folder" 
           ./steps/make_mfcc_pitch.sh --nj 30  $folder
+	  ./steps/compute_cmvn_stats.sh $folder
         done
 fi
