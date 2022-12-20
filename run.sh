@@ -8,7 +8,7 @@
 set -e -o pipefail -u
 
 
-stage=2
+stage=3
 
 # Download data
 if [ $stage -le 0 ]; then
@@ -27,7 +27,12 @@ fi
 if [ $stage -le 2 ]; then
         for folder in db/cu-multilang-dataset/*; do
           echo "making mfcc + pitch features for $folder" 
-          ./steps/make_mfcc_pitch.sh --nj 30  $folder
-	  ./steps/compute_cmvn_stats.sh $folder
+          ./local/make_mfcc_pitch.sh --nj 30  $folder
+	  ./local/compute_cmvn_stats.sh $folder
         done
+fi
+
+# Make MFCC features for each language
+if [ $stage -le 3 ]; then
+	python3 train_model.py 4 1 15 0.8
 fi
